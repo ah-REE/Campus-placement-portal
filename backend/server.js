@@ -14,7 +14,10 @@ const allowedOrigins = (process.env.CLIENT_URL || '')
   .filter(Boolean);
 
 app.use(cors({
-  origin: allowedOrigins.length ? allowedOrigins : true
+  origin: allowedOrigins.length ? allowedOrigins : true,
+  methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  optionsSuccessStatus: 204
 }));
 app.use(express.json({ limit: '1mb' }));
 
