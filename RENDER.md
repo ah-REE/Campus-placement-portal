@@ -15,6 +15,6 @@ Create two Vercel projects from this repository:
 5. Set `VITE_API_URL` to the backend URL plus `/api`.
 6. Deploy the frontend, then update backend `CLIENT_URL` with the frontend URL and redeploy the backend.
 
-The `frontend/vercel.json` rewrite keeps React Router routes working on direct page loads. The backend `api/[...path].js` exposes all existing Express routes as a Vercel function.
+The `frontend/vercel.json` rewrite keeps React Router routes working on direct page loads. Vercel detects the backend's root `server.js` and routes requests through Express.
 
 The backend health check is available at `/api/health`. Do not commit either service's `.env` file or real credentials.
