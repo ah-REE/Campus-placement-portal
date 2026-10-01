@@ -39,16 +39,21 @@ router.post('/register', async (req, res) => {
 
 // POST /api/auth/login — role-based login
 router.post('/login', async (req, res) => {
-  const { email, password } = req.body;
-  const admin = await Admin.findOne({ email: (email || '').toLowerCase() });
-  if (admin) {
-    if (!await admin.comparePassword(password || '')) return res.status(401).json({ message: 'Invalid credentials' });
-    return res.json({ token: sign(admin._id, 'admin'), user: { id: admin._id, role: 'admin', name: admin.name, email: admin.email } });
+  try {
+    const { email, password } = req.body;
+    const admin = await Admin.findOne({ email: (email || '').toLowerCase() });
+    if (admin) {
+      if (!await admin.comparePassword(password || '')) return res.status(401).json({ message: 'Invalid credentials' });
+      return res.json({ token: sign(admin._id, 'admin'), user: { id: admin._id, role: 'admin', name: admin.name, email: admin.email } });
+    }
+    const student = await Student.findOne({ email: (email || '').toLowerCase() });
+    if (!student || !await student.comparePassword(password || '')) return res.status(401).json({ message: 'Invalid credentials' });
+    if (!student.isActive) return res.status(403).json({ message: 'Your account has been deactivated. Contact the placement office.' });
+    return res.json({ token: sign(student._id, 'student'), user: { id: student._id, role: 'student', name: student.name, email: student.email } });
+  } catch (err) {
+    console.error('Login failed:', err);
+    return res.status(500).json({ message: 'Login service unavailable' });
   }
-  const student = await Student.findOne({ email: (email || '').toLowerCase() });
-  if (!student || !await student.comparePassword(password || '')) return res.status(401).json({ message: 'Invalid credentials' });
-  if (!student.isActive) return res.status(403).json({ message: 'Your account has been deactivated. Contact the placement office.' });
-  res.json({ token: sign(student._id, 'student'), user: { id: student._id, role: 'student', name: student.name, email: student.email } });
 });
 
 // POST /api/auth/forgot
