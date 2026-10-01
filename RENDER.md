@@ -1,18 +1,20 @@
 # Render deployment
 
-Render hosts the backend through `render.yaml`. Vercel hosts the frontend.
+Vercel can host both the backend and frontend without the Render billing requirement.
 
-- `campus-placement-api`: Node/Express backend
+- `campus-placement-api`: Node/Express serverless function
 
-## Deploy
+## Vercel deployment
 
-1. In Render, choose **New > Blueprint** and select this GitHub repository.
-2. Create the backend service from `render.yaml`.
-3. In the backend service, set `MONGO_URI` to a MongoDB Atlas connection string and add the current Gemini and SMTP credentials.
-4. In Vercel, import this repository and set the project root directory to `frontend`.
-5. Add `VITE_API_URL` in Vercel as the deployed backend URL plus `/api`, for example `https://campus-placement-api.onrender.com/api`.
-6. Copy the deployed Vercel URL into Render's `CLIENT_URL`, then redeploy the backend.
+Create two Vercel projects from this repository:
 
-The `frontend/vercel.json` rewrite keeps React Router routes working on direct page loads.
+1. Create the backend project with root directory `backend`.
+2. Set `MONGO_URI`, `JWT_SECRET`, `CLIENT_URL`, `GEMINI_API_KEY`, `EMAIL_USER`, `EMAIL_PASS`, `SMTP_HOST`, and `SMTP_PORT` in the backend project.
+3. Deploy the backend and copy its URL.
+4. Create the frontend project with root directory `frontend`.
+5. Set `VITE_API_URL` to the backend URL plus `/api`.
+6. Deploy the frontend, then update backend `CLIENT_URL` with the frontend URL and redeploy the backend.
+
+The `frontend/vercel.json` rewrite keeps React Router routes working on direct page loads. The backend `api/[...path].js` exposes all existing Express routes as a Vercel function.
 
 The backend health check is available at `/api/health`. Do not commit either service's `.env` file or real credentials.

@@ -30,4 +30,10 @@ app.use((err, req, res, next) => {
 });
 
 const PORT = process.env.PORT || 5000;
-connectDB().then(() => app.listen(PORT, () => console.log(`✔ API running on http://localhost:${PORT}`)));
+
+export { app, connectDB };
+export default app;
+
+if (!process.env.VERCEL) {
+  connectDB().then(() => app.listen(PORT, () => console.log(`✔ API running on http://localhost:${PORT}`)));
+}
